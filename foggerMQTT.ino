@@ -157,7 +157,6 @@ void loop() {
 
 // function to allow the fogger time to do its initial warmup
 void warmup(){
-
   // publish that fogger is in a "not ready" state
 
   // wait 300 seconds for fogger to warm up
@@ -174,53 +173,40 @@ void warmup(){
 
 // function that triggers fog at a regular interval 
 void interval_fog(){
-  // check amount of time that has passed since last fog activation
-
-  // add time to counter
-
-  // call fog if interval has elapsed 
-  if (currentMillis - previousMillis >= interval) {
-    // save the last time you blinked the LED
-    previousMillis = currentMillis;
-    fog();
-  }
-    
+    while (true) {
+        fog();
+    }
 }
 
 // function that runs the fogger for 30 seconds
 void fog(){
-  // set variables 
-  fogging = true; 
-  
-  // start fogging
-  digitalWrite(14, HIGH); 
+    // set variables
+    fogging = true;
 
-  // publish that the fogger is running
+    // publish that the fogger is running
+    if (!isready.publish(true)) {
+        Serial.println(F("Failed"));
+    } else {
+        Serial.println(F("OK!"));
+    }
 
-  // allow 30 seconds to pass
-  
+    // allow 30 seconds to pass
+    if (currentMillis - previousMillis >= interval) {
+        // save the last time you blinked the LED
+        previousMillis = currentMillis;
 
-  // after 30 seconds, publish that the fogger is not running
-  
-  // turn off relay switch
-  digitalWrite(14, LOW); 
+        // turn off relay switch
+        digitalWrite(14, LOW);
 
-  // set variables 
-  fogger_ready = false; 
+        // set variables
+        fogger_ready = false;
 
-  // call recover function here? or in main loop?
-  recover();
-}
-
-
-// function to allow the fogger to recover from fogging and reach its ready state 
-void recover(){
-  // publish that fogger is in a "not ready" state
-
-  // wait 30 seconds 
-
-  // publish that fogger is in a "ready" state
-  
+        // call recover function here? or in main loop?
+        recover();
+    } else {
+        // start fogging
+        digitalWrite(14, HIGH);
+    }
 }
 
 
